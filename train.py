@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time : 2024/12/7 23:45
 # @Author : nanji
-# @Site : 
+# @Site : https://www.bilibili.com/video/BV1gQ4y1X7AK/?spm_id_from=333.1007.top_right_bar_window_history.content.click&vd_source=50305204d8a1be81f31d861b12d4d5cf
 # @File : train.py
 # @Software: PyCharm 
 # @Comment :
