@@ -1,4 +1,5 @@
 # ignore map, miou, datasets
+data
 .idea
 map_out/
 miou_out/
