@@ -74,6 +74,10 @@ class FaceData(Data.Dataset):
     def __getitem__(self, item):
         a_path, p_path, n_path = self.paths[item]
         a_img, p_img, n_img = self.read_image(a_path)
+        # 提取 label
+        s_l = int(re.findall(r"(\d+)\\(\d+).jpg", a_img)[0])
+        n_l = int(re.findall(r"(\d+)\\(\d+).jpg", p_img)[0])
+        return a_img, p_img, n_img, s_l, n_path
 
         return self.paths[item]
 
