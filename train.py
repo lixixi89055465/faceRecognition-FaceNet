@@ -15,6 +15,9 @@ import re
 from config import Config
 import numpy as np
 import random
+from model import FaceNetModel
+
+from torch.nn import functional as F
 
 config = Config.from_json_file('config.json')
 
@@ -78,11 +81,39 @@ class FaceData(Data.Dataset):
         s_l = int(re.findall(r"(\d+)\\(\d+).jpg", a_img)[0])
         n_l = int(re.findall(r"(\d+)\\(\d+).jpg", p_img)[0])
         return a_img, p_img, n_img, s_l, n_path
-
         return self.paths[item]
 
     def __len__(self):
         return len(self.paths)
+
+
+def train():
+    paths = read_data()
+    train_data = FaceData(paths)
+    train_data = Data.DataLoader(train_data, batch_size=config.batch_size, shuffle=True)
+    # 初始化网络
+    model = FaceNetModel(config.image_size, config.class_nums)
+    model.train()
+    optimizer = torch.optim.optimizer(model.parameters(), lr=config.lr)
+    loss_t = TripletLoss(config.alpha)
+    loss_c = nn.CrossEntropyLoss()
+    nb = len(train_data)
+    for epoch in range(1, config.epochs + 1):
+        pbar = tqdm(train_data, total=nb)
+        for step, (a_x, p_x, n_x, s_y, n_y) in enumerate(pbar):
+            a_out, p_out, n_out = model(a_x), model(p_x), model(n_x)
+
+
+class TripletLoss(nn.Module):
+    def __init__(self, alpha):
+        super().__init__()
+        self.alpha = alpha
+        self.pairwize_distance = nn.PairwiseDistance()
+
+    def forward(self, a_x, p_x, n_x):
+        s_d = self.pairwize_distance(a_x, p_x)
+        n_d = self.pairwise_distance(a_x, n_x)
+        return torch.clamp(s_d - n_d + self.alpha, min=0.02)
 
 
 if __name__ == '__main__':

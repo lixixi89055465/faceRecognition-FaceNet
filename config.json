@@ -4,5 +4,6 @@
   "lr": 1e-2,
   "last_lr": 1e-4,
   "alpha": 0.5,
-  "image_size": 128
+  "image_size": 128,
+  "emd_size": 256
 }
