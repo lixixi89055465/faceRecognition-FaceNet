@@ -21,6 +21,8 @@ class FaceNetModel(nn.Module):
             self.resnet.conv1,
             self.resnet.bn1,
             self.resnet.relu,
+            self.resnet.maxpool,
+
             self.resnet.layer1,
             self.resnet.layer2,
             self.resnet.layer3,
@@ -28,7 +30,7 @@ class FaceNetModel(nn.Module):
             nn.Flatten()
         )
 
-        self.fc = nn.Linear(32756, self.emd_size)
+        self.fc = nn.Linear(32768, self.emd_size)
         self.l2_norm = F.normalize
         self.fc_class = nn.Linear(emd_size, self.class_nums)
 
