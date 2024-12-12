@@ -106,19 +106,20 @@ def train():
             s_d = F.pairwise_distance(a_out, p_out)
             n_d = F.pairwise_distance(a_out, n_out)
             thing = (n_d - s_d < config.alpha).flatten()
-            mask = np.where(thing.numpy() == 1)
+            mask = np.where(thing.numpy() == 1)[0]
             if not len(mask):
                 continue
             # 计算三元损失
-            a_out, p_out, n_out = a_x[mask], p_x[mask], n_x[mask]
-            loss_t = loss_t_fc(a_out, p_out, n_out)
+            a_out, p_out, n_out = a_out[mask], p_out[mask], n_out[mask]
+            loss_t = torch.mean(loss_t_fc(a_out, p_out, n_out))
             # 计算熵损失
+            a_x, p_x, n_x = a_x[mask], p_x[mask], n_x[mask]
             input_x = torch.cat([a_x, p_x, n_x])
             s_y, n_y = s_y[mask], n_y[mask]
             output_y = torch.cat([s_y, s_y, n_y])
 
             out = model.forward_class(input_x)
-            loss_c = loss_c_fc(out, output_y)
+            loss_c = loss_c_fc(out, output_y.unsqueeze(1))
             loss = loss_t + loss_c
             if old_loss_time is None:
                 old_loss_time = loss
@@ -133,8 +134,9 @@ def train():
             s = ("train ===> epoch:{}"
                  "----- step:{}"
                  "---------loss_t {:.4f}"
-                 "----- loss_c:{:.4f}-------loss:{:.4f}".
-                 format(epoch, step, loss_t, loss_c, loss))
+                 "----- loss_c:{:.4f}-------loss:{:.4f}"
+                 "------{:.4f}".
+                 format(epoch, step, loss_t, loss_c, loss, loss_time))
             pbar.set_description(s)
 
 

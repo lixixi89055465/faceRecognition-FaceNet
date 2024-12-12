@@ -37,7 +37,7 @@ class FaceNetModel(nn.Module):
     def forward(self, x):
         x = self.faceNet(x)
         x = self.fc(x)
-        x = self.l2_norm(x, dim=1) * 10
+        x = self.l2_norm(x) * 10
         return x
 
     def forward_class(self, x):
